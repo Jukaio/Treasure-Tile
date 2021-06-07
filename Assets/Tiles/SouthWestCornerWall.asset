@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a99d9a7c643bf649b325525a7395692, type: 3}
+  m_Name: SouthWestCornerWall
+  m_EditorClassIdentifier: 
+  orientation: 2
+  blocked: 1
+  prefab: {fileID: 5962050701186923195, guid: 4fff83733a977b2489089e4e3e927eca, type: 3}

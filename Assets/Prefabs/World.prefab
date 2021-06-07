@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3806058013360738772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3806058013360738761}
+  - component: {fileID: 3806058013360738774}
+  - component: {fileID: 3806058013360738775}
+  - component: {fileID: 3806058013360738763}
+  - component: {fileID: 3806058013360738760}
+  m_Layer: 0
+  m_Name: World
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3806058013360738761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806058013360738772}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &3806058013360738774
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806058013360738772}
+  m_Enabled: 1
+  m_CellSize: {x: 10, y: 10, z: 10}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 1
+--- !u!1839735485 &3806058013360738775
+Tilemap:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806058013360738772}
+  m_Enabled: 1
+  m_Tiles: {}
+  m_AnimatedTiles: {}
+  m_TileAssetArray: []
+  m_TileSpriteArray: []
+  m_TileMatrixArray: []
+  m_TileColorArray: []
+  m_TileObjectToInstantiateArray: []
+  m_AnimationFrameRate: 1
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Origin: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0, y: 0, z: 1}
+  m_TileAnchor: {x: 0.5, y: 0.5, z: 0.5}
+  m_TileOrientation: 0
+  m_TileOrientationMatrix:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
+--- !u!114 &3806058013360738763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806058013360738772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2de1c193fe92d54f94f6299e0d7cd13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 50
+  height: 50
+  fillAmountRatio: 0.449
+  stepCount: 8
+--- !u!114 &3806058013360738760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806058013360738772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e98a36f335c804bbae609d74bca4ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ground: {fileID: 11400000, guid: 36407ff07e0fd854e8b2ec98e10338a4, type: 2}
+  wall: {fileID: 11400000, guid: bdce81ba6477d224db0720b555ebc701, type: 2}
+  north_east_corner_wall: {fileID: 11400000, guid: ebf9c9c51f081b1448185ad3d70491bb,
+    type: 2}
+  north_west_corner_wall: {fileID: 11400000, guid: 3d0fcfc3ada009247a0a87aa41247f5b,
+    type: 2}
+  south_east_corner_wall: {fileID: 11400000, guid: 53fba16632890fa4d8c68e7b03c67871,
+    type: 2}
+  south_west_corner_wall: {fileID: 11400000, guid: d2eb9bcfab4f19846bb02c447fbc6ce7,
+    type: 2}
+  north_east_inner_corner_wall: {fileID: 11400000, guid: a9eb7011c83d742429ad94d23be9eff1,
+    type: 2}
+  north_west_inner_corner_wall: {fileID: 11400000, guid: b2365859b203a394cbccf29171e22578,
+    type: 2}
+  south_east_inner_corner_wall: {fileID: 11400000, guid: bea96786bbe18e242815425a7fd361be,
+    type: 2}
+  south_west_inner_corner_wall: {fileID: 11400000, guid: 536717285a50af84098db0985b21c88f,
+    type: 2}
+  north_half_wall: {fileID: 11400000, guid: 55ad597b3b6644a4c8fa47a22b7f9d6e, type: 2}
+  south_half_wall: {fileID: 11400000, guid: 582fda01e8e310c41b38ca9799749dd3, type: 2}
+  east_half_wall: {fileID: 11400000, guid: 2e88a63c0cc96e542ba8777234074fd6, type: 2}
+  west_half_wall: {fileID: 11400000, guid: 1f6a7fec777852b4a84f458cadf3d35c, type: 2}
+  stone: {fileID: 11400000, guid: 631716427b42e65478da4d9a874db50e, type: 2}
+  debug_generator: 0
