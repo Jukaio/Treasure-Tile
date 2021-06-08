@@ -67,10 +67,10 @@ public class EnemyController : TileController
         f[from.x, from.y] = 0.0f;
         g[from.x, from.y] = heuristic(from, to);
 
-        Stack<Vector2Int> open = new Stack<Vector2Int>();
-        open.Push(from);
+        Queue<Vector2Int> open = new Queue<Vector2Int>();
+        open.Enqueue(from);
         while(open.Count > 0) {
-            var current = open.Pop();
+            var current = open.Dequeue();
             if(current == to) {
                 break;
             }
@@ -85,9 +85,9 @@ public class EnemyController : TileController
                 float cost = g[current.x, current.y] + heuristic(current, index);
                 if(cost < g[index.x, index.y]) {
                     g[index.x, index.y] = cost;
-                    f[index.x, index.y] = cost * heuristic(index, to);
+                    f[index.x, index.y] = cost + heuristic(index, to);
                     trace[index.x, index.y] = current;
-                    open.Push(index);
+                    open.Enqueue(index);
                 }
             });
         }
