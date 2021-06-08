@@ -5,6 +5,19 @@ using UnityEngine.Tilemaps;
 
 public class Tile3D : TileBase
 {
+    public Tile3D()
+    {
+
+    }
+    public Tile3D(Tile3D other)
+    {
+        this.gameObject = other.gameObject;
+        this.blocked = other.blocked;
+        this.orientation = other.orientation;
+        this.prefab = other.prefab;
+        this.visitor = other.visitor;
+    }
+
     public enum Direction
     {
         North,
@@ -20,11 +33,54 @@ public class Tile3D : TileBase
     public Matrix4x4 transform { get { return transformation; } set { transformation = value; } }
     public bool IsBlocked { get { return blocked; } }
 
-    private PlayerController player = null;
+    private int damage;
+    public int Damage => damage;
+    public void SetDamage(int value)
+    {
+        damage = Mathf.Clamp(value, 0, int.MaxValue);
+    }
 
-    public PlayerController Player{ get { return player; } set { player = value; } }
-    public bool HasPlayer { get { return player != null; } }
 
+    private GameObject visitor = null;
+    public GameObject Visitor { get { return visitor; } set { visitor = value; } }
+
+    public bool TryGetPlayer(out PlayerController player)
+    {
+        if (visitor == null) {
+            player = null;
+            return false;
+        }
+        return visitor.TryGetComponent<PlayerController>(out player);
+    }
+    public bool TryGetController(out TileController tile)
+    {
+        if(visitor == null) {
+            tile = null;
+            return false;
+        }
+        return visitor.TryGetComponent<TileController>(out tile);
+    }
+
+    public bool HasPlayer 
+    { 
+        get 
+        {
+            if(visitor == null) {
+                return false;
+            }
+            return visitor.GetComponent<PlayerController>() != null; 
+        } 
+    }
+    public bool HasEnemy
+    {
+        get
+        {
+            if (visitor == null) {
+                return false;
+            }
+            return visitor.GetComponent<EnemyController>() != null;
+        }
+    }
 
 
     private float DirectionToAngle(Direction dir)

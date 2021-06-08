@@ -86,6 +86,21 @@ public abstract class UtilityGrid<Resource> : MonoBehaviour
             }
         }
     }
+    public void ForEachNeumannNeighbour(Vector2Int index, Receiver receive)
+    {
+        GetNeighbourhoodBounds(index, Vector2Int.one, out Vector2Int min, out Vector2Int max);
+        for (int y = min.y; y <= max.y; y++) {
+            for (int x = min.x; x <= max.x; x++) {
+                if (x == index.x && y == index.y) {
+                    continue; // Skip origin
+                }
+                if (x != index.x && y != index.y) {
+                    continue; // Skip Diagonal
+                }
+                receive(new Vector2Int(x, y), Get(new Vector2Int(x, y)));
+            }
+        }
+    }
     public void ForEachNeigbhour(Vector2Int index, Assigner assign)
     {
         GetNeighbourhoodBounds(index, Vector2Int.one, out Vector2Int min, out Vector2Int max);

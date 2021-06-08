@@ -26,6 +26,13 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
     [SerializeField] private Tile3D west_half_wall = null;
     [SerializeField] private Tile3D stone = null;
 
+    public PlayerController Player { get; private set; }
+    // To make it VERY explicit - SetPlayer
+    public void SetPlayer(PlayerController that) 
+    {
+        Player = that;
+    }
+
     public Vector3 TileSize{ get { return grid.cellSize; } }
 
     public Vector2Int WorldPositionToIndex(Vector3 at)
@@ -50,6 +57,14 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
         return at + offset;
     }
 
+    public void Kill(Vector2Int at) 
+    {
+        if (IsInBounds(at)) {
+            var that = Get(at);
+            that.Visitor = null;
+        }
+    }
+
     public bool IsBlocked(Vector2Int at) 
     {
         if(IsInBounds(at)) {
@@ -57,6 +72,22 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
             return that.IsBlocked;
         }
         return true;
+    }
+    public bool HasEnemy(Vector2Int at)
+    {
+        if (IsInBounds(at)) {
+            var that = Get(at);
+            return that.HasEnemy;
+        }
+        return false;
+    }
+    public bool HasPlayer(Vector2Int at)
+    {
+        if (IsInBounds(at)) {
+            var that = Get(at);
+            return that.HasPlayer;
+        }
+        return false;
     }
 
     public override Tile3D Get(Vector2Int at) 
@@ -212,12 +243,12 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
             //    Set(index, ground);
             //    return;
             //}
-            Set(index, EvaluateTileConsideringNeighbours(index, state));
+            Set(index, new Tile3D(EvaluateTileConsideringNeighbours(index, state)));
         });
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         grid = GetComponent<Grid>();
         tilemap = GetComponent<Tilemap>();
@@ -250,8 +281,17 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
             if(debug_generator) {
                 ForEach((Vector2Int index, Tile3D tile) =>
                 {
-                    Color color = tile.IsBlocked ? Color.green : Color.red;
-                    Gizmos.color = color;
+                    if(tile.Visitor != null) {
+                        if (tile.HasPlayer) {
+                            Gizmos.color = Color.cyan;
+                        } 
+                        else {
+                            Gizmos.color = Color.yellow;
+                        }
+                    }
+                    else {
+                        Gizmos.color = tile.IsBlocked ? Color.green : Color.red;
+                    }
                     var offset = new Vector3(grid.cellSize.x * tilemap.tileAnchor.x, 
                                              grid.cellSize.y * tilemap.tileAnchor.y, 
                                              grid.cellSize.z * tilemap.tileAnchor.z);
@@ -259,15 +299,6 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
                 });
                 return;
             }
-            generator.ForEach((Vector2Int index, WorldGenerator.State state) =>
-            {
-                Color color = state == WorldGenerator.State.alive ? Color.green : Color.red;
-                Gizmos.color = color;
-                var offset = new Vector3(grid.cellSize.x * tilemap.tileAnchor.x,
-                                         grid.cellSize.y * tilemap.tileAnchor.y,
-                                         grid.cellSize.z * tilemap.tileAnchor.z);
-                Gizmos.DrawWireCube(tilemap.CellToWorld((Vector3Int)index) + offset, grid.cellSize);
-            });
         }
     }
 }

@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : TileController
 {
+    [SerializeField] private Health health = null;
+    
     private Vector3Int direction = Vector3Int.zero;
-    public Vector3Int Direction{ get { return direction; } }
+    public override Vector3Int Direction{ get { return direction; } }
     private Animator animator = null;
     private ParticleSystem dust = null;
-    [SerializeField] private WorldManager world = null;
+    public int CurrentHealth { get { return health.Current; } }
+    public Transform Transform{ get{ return transform; } }
 
-    public Vector3 Step { get { return world.TileSize; } }
-    public Vector3 Steps(Vector3Int direction)
+    private void Awake()
     {
-        var step = Step;
-        step.x *= direction.x;
-        step.y *= direction.y;
-        step.z *= direction.z;
-        return step;
+        world.SetPlayer(this);
     }
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -29,7 +28,29 @@ public class PlayerController : MonoBehaviour
         var offset = new Vector3(size.x * anchor.x,
                                  size.y * anchor.y,
                                  size.z * anchor.z);
-        transform.position = Vector3.zero + offset; // TODO: Replace Vector3.zero with spawn position
+        transform.position = world.IndexToWorldPosition(new Vector2Int(3, 0)); // TODO: Replace Vector3.zero with spawn position
+        RefreshInWorld(transform.position, transform.position);
+    }
+
+
+
+    void SetDirection(Vector3 dir)
+    {
+        direction.x = (int)(dir.x);
+        direction.y = 0;
+        direction.z = (int)(dir.z);
+    }
+    void SetDirection(int x, int z)
+    {
+        direction.x = x;
+        direction.y = 0;
+        direction.z = z;
+    }
+    void ResetDirection()
+    {
+        direction = Vector3Int.zero;
+        animator.SetBool("Attacking", false);
+        animator.SetBool("Moving", false);
     }
 
     void Update()
@@ -48,24 +69,37 @@ public class PlayerController : MonoBehaviour
             dir += Vector3.back;
         }
         dir.Normalize();
-        var current = world.WorldPositionToIndex(transform.position);
-        direction.x = (int)(dir.x);
-        direction.z = (int)(dir.z);
-        if (world.IsBlocked(current + new Vector2Int(direction.x, direction.z))) {
-            direction.x = 0;
-            direction.z = 0;
+        ResetDirection();
+        SetDirection(dir);
+        if (dir.magnitude <= 0.1f) { // Little bit of dead zone; it should be either 1 or 0. Math
+            return; // Nothing happens
+        }
+
+        var target = world.WorldPositionToIndex(transform.position) + new Vector2Int(direction.x, direction.z);
+        if(world.HasEnemy(target)) {
+            animator.SetBool("Attacking", true);
+            return;
+        }
+        else if (world.IsBlocked(target)) {
+            ResetDirection();
         }
         animator.SetBool("Moving", direction.magnitude != 0.0f);
     }
 
-    Vector2Int current_world_index = Vector2Int.zero;
-    public void RefreshPlayerInWorld(Vector3 previous, Vector3 current)
+    public override void Attack(Vector3 position)
     {
-        var prev = world.Get(world.WorldPositionToIndex(previous));
-        var curr = world.Get(world.WorldPositionToIndex(current));
-        current_world_index = world.WorldPositionToIndex(current);
-        prev.Player = null;
-        curr.Player = this;
+        var index = world.WorldPositionToIndex(position);
+        if (world.HasEnemy(index)) {
+            var enemy = world.Get(index).Visitor.GetComponent<TileController>();
+            enemy.OnDamage(10);
+        }
+    }
+
+    public override void OnDamage(int damage)
+    {
+        if (health.ReduceAndCheckDeath(damage)) {
+            // Death
+        }
     }
 
     public void PlayDust()
@@ -73,16 +107,8 @@ public class PlayerController : MonoBehaviour
         dust.Play();
     }
 
-    private void OnDrawGizmos()
+    public override void OnMoveFinish()
     {
-        if (Application.isPlaying) {
-            var index = world.WorldPositionToIndex(transform.position);
-            var at = world.IndexToWorldPosition(index);
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireCube(at, Step);
-            at = world.IndexToWorldPosition(current_world_index);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(at, Step);
-        }
+        dust.Play();
     }
 }
