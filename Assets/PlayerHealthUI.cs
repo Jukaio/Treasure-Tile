@@ -9,12 +9,11 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Text value = null;
     void Start()
     {
-        value.text = player.CurrentHealth.ToString();
+        value.text = player.HealthPoints.Current.ToString();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        value.text = player.HealthPoints.Current.ToString();
     }
 }

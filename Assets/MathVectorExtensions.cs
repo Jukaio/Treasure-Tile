@@ -5,6 +5,15 @@ using UnityEngine;
 
 public static class MathVectorExtensions
 {
+    public static Vector2Int XZ(this Vector3Int that)
+    {
+        return new Vector2Int(that.x, that.z);
+    }
+    public static Vector3Int XZ(this Vector2Int that)
+    {
+        return new Vector3Int(that.x, 0, that.y);
+    }
+
     public static Vector3 EasingSinIn(this Vector3 that, float t)
     {
         var factor = Mathf.Sin((t * Mathf.PI) * 0.5f);

@@ -64,7 +64,20 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
             that.Visitor = null;
         }
     }
-
+    public void Open(Vector2Int at)
+    {
+        if (IsInBounds(at)) {
+            var that = Get(at);
+            that.Open();
+        }
+    }
+    public void Reserve(Vector2Int at)
+    {
+        if (IsInBounds(at)) {
+            var that = Get(at);
+            that.Reserve();
+        }
+    }
     public bool IsBlocked(Vector2Int at) 
     {
         if(IsInBounds(at)) {
@@ -238,12 +251,7 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
     {
         generator.ForEach((Vector2Int index, WorldGenerator.State state) =>
         {
-            //if (state == WorldGenerator.State.dead &&
-            //   generator.GetNeighbourCount(index, WorldGenerator.State.alive) == 0) {
-            //    Set(index, ground);
-            //    return;
-            //}
-            Set(index, new Tile3D(EvaluateTileConsideringNeighbours(index, state)));
+            Set(index, Tile3D.Copy(EvaluateTileConsideringNeighbours(index, state)));
         });
     }
 
@@ -288,6 +296,9 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
                         else {
                             Gizmos.color = Color.yellow;
                         }
+                    }
+                    else if (tile.IsReserved) {
+                        Gizmos.color = Color.magenta;
                     }
                     else {
                         Gizmos.color = tile.IsBlocked ? Color.green : Color.red;

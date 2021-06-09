@@ -5,50 +5,75 @@ using UnityEngine.Tilemaps;
 
 public class EnemyController : TileController
 {
-    private Animator animator = null;
-
     private Vector3Int direction = Vector3Int.zero;
     public override Vector3Int Direction => direction;
+    private List<Vector2Int> path = null;
+
+    public void SetPath(List<Vector2Int> that) {
+        path = that;
+        if(path?.Count <= 0) {
+            direction = Vector3Int.zero;
+            return;
+        }
+        direction = path[path.Count - 1].XZ();
+        var dir = direction.XZ();
+        if (world.Get(dir).IsReserved) { // On research means player is in a movement animation 
+            direction = Vector3Int.zero; // Just delay this entity's move by a little
+            return;
+        }
+        else if(world.HasPlayer(dir)) { 
+            SetAttacking(true);
+        }
+        else {
+            world.Reserve(dir);
+            SetMoving(true);
+        }
+        direction -= world.WorldPositionToIndex(transform.position).XZ();
+    }
+
+
     public override void OnMoveFinish()
     {
-
+        world.Get(world.WorldPositionToIndex(transform.position)).Open();
+        PlayDust();
+        SetMoving(false);
+    }
+    public override void OnAttackFinish()
+    {
+        SetAttacking(false);
     }
 
     void Start()
     {
-        animator = GetComponent<Animator>();
-        animator.SetBool("Moving", true);
-        var size = world.GetComponent<Grid>().cellSize;
-        var anchor = world.GetComponent<Tilemap>().tileAnchor;
-        var offset = new Vector3(size.x * anchor.x,
-                                 size.y * anchor.y,
-                                 size.z * anchor.z);
         transform.position = world.IndexToWorldPosition(new Vector2Int(5, 0)); // TODO: Replace Vector3.zero with spawn position
         RefreshInWorld(transform.position, transform.position);
     }
 
-    public override void Attack(Vector3 position)
+    public override void OnAttack(Vector3 position)
     {
         var index = world.WorldPositionToIndex(position);
         if (world.HasPlayer(index)) {
-            world.Get(index).Visitor.SetActive(false);
+            var enemy = world.Get(index).Visitor.GetComponent<TileController>();
+            enemy.OnDamage(10);
         }
     }
     public override void OnDamage(int damage)
     {
-        world.Kill(world.WorldPositionToIndex(transform.position));
-        gameObject.SetActive(false);
+        if(HealthPoints.ReduceAndCheckDeath(damage)) {
+            world.Kill(world.WorldPositionToIndex(transform.position));
+            gameObject.SetActive(false);
+        }
     }
 
-    List<Vector2Int> FindPlayer(Vector2Int from, Vector2Int to) 
-    {
+    // TODO: Pathfinding component - system
+    List<Vector2Int> FindShortestPath(Vector2Int from, Vector2Int to) 
+    { 
         var player = world.Player;
         Vector2Int size = world.Size(); // 120
 
         float heuristic(Vector2Int a, Vector2Int b)
         {
-            return Vector2Int.Distance(a, b);
-            //return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+            return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         };
 
         float[,] f = new float[size.x, size.y];
@@ -69,7 +94,7 @@ public class EnemyController : TileController
 
         Queue<Vector2Int> open = new Queue<Vector2Int>();
         open.Enqueue(from);
-        while(open.Count > 0) {
+        while(open.Count > 0) {  
             var current = open.Dequeue();
             if(current == to) {
                 break;
@@ -93,9 +118,15 @@ public class EnemyController : TileController
         }
 
         var next = to;
+        if (next == new Vector2Int(int.MaxValue, int.MaxValue)) {
+            return null;
+        }
+
         int count = 0;
         List<Vector2Int> path = new List<Vector2Int>();
-        while (next != from && count < 10000) {
+        while (next != from // Run while not full path collected
+               && count < world.Size().magnitude // ... while not inifnite
+               && next != new Vector2Int(int.MaxValue, int.MaxValue)) { // ... while not invalid
             path.Add(next);
             next = trace[next.x, next.y];
             count++;
@@ -104,24 +135,12 @@ public class EnemyController : TileController
     }
 
 
-    // Update is called once per frame
-    void Update()
+    public bool FoundShortestPathToPlayer(out List<Vector2Int> path)
     {
         var player = world.Player;
+        path = FindShortestPath(world.WorldPositionToIndex(transform.position),
+                                world.WorldPositionToIndex(player.transform.position));
+        return path != null;
     }
-    private void OnDrawGizmos()
-    {
-        if(!Application.isPlaying) {
-            return;
-        }
 
-        var player = world.Player;
-        var path = FindPlayer(world.WorldPositionToIndex(player.transform.position),
-                              world.WorldPositionToIndex(transform.position));
-        Gizmos.color = Color.magenta;
-        foreach(var index in path) {
-            var full = world.IndexToWorldPosition(index);
-            Gizmos.DrawCube(full, world.TileSize);
-        }
-    }
 }

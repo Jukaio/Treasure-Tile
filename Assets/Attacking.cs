@@ -14,8 +14,7 @@ public class Attacking : TileControllerMovementState
     void GoBackward()
     {
         IsForward = false;
-        controller.Attack(target);
-        controller.OnMoveFinish();
+        controller.OnAttack(target);
         // Stuff
     }
 
@@ -38,6 +37,6 @@ public class Attacking : TileControllerMovementState
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.gameObject.transform.position = from;
-        controller.OnMoveFinish();
+        controller.OnAttackFinish();
     }
 }

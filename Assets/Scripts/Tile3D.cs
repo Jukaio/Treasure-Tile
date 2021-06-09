@@ -9,13 +9,16 @@ public class Tile3D : TileBase
     {
 
     }
-    public Tile3D(Tile3D other)
+   
+    public static Tile3D Copy(Tile3D other)
     {
-        this.gameObject = other.gameObject;
-        this.blocked = other.blocked;
-        this.orientation = other.orientation;
-        this.prefab = other.prefab;
-        this.visitor = other.visitor;
+        Tile3D to_return = ScriptableObject.CreateInstance<Tile3D>();
+        to_return.gameObject = other.gameObject;
+        to_return.blocked = other.blocked;
+        to_return.orientation = other.orientation;
+        to_return.prefab = other.prefab;
+        to_return.visitor = other.visitor;
+        return to_return;
     }
 
     public enum Direction
@@ -28,10 +31,23 @@ public class Tile3D : TileBase
     //public float rotation;
     [SerializeField] private Direction orientation = Direction.North;
     [SerializeField] private bool blocked = false;
+    private bool reserved  = false;
 
     public GameObject gameObject{ get { return prefab; } set { prefab = value; } }
     public Matrix4x4 transform { get { return transformation; } set { transformation = value; } }
-    public bool IsBlocked { get { return blocked; } }
+    public bool IsBlocked => blocked;
+    public bool IsReserved => reserved;
+
+    public void Reserve()
+    {
+        reserved = true;
+    }
+    public void Open()
+    {
+        reserved = false;
+    }
+
+
 
     private int damage;
     public int Damage => damage;

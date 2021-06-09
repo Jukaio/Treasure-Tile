@@ -5,58 +5,45 @@ using UnityEngine.Tilemaps;
 
 public class PlayerController : TileController
 {
-    [SerializeField] private Health health = null;
-    
     private Vector3Int direction = Vector3Int.zero;
-    public override Vector3Int Direction{ get { return direction; } }
-    private Animator animator = null;
-    private ParticleSystem dust = null;
-    public int CurrentHealth { get { return health.Current; } }
-    public Transform Transform{ get{ return transform; } }
+    public override Vector3Int Direction { get { return direction; } }
 
-    private void Awake()
+    protected override sealed void OnAwake()
     {
         world.SetPlayer(this);
     }
 
     void Start()
     {
-        animator = GetComponent<Animator>();
-        dust = GetComponent<ParticleSystem>();
-        var size = world.GetComponent<Grid>().cellSize;
-        var anchor = world.GetComponent<Tilemap>().tileAnchor;
-        var offset = new Vector3(size.x * anchor.x,
-                                 size.y * anchor.y,
-                                 size.z * anchor.z);
         transform.position = world.IndexToWorldPosition(new Vector2Int(3, 0)); // TODO: Replace Vector3.zero with spawn position
         RefreshInWorld(transform.position, transform.position);
     }
 
-
-
-    void SetDirection(Vector3 dir)
+    public void SetDirection(Vector3 dir)
     {
         direction.x = (int)(dir.x);
         direction.y = 0;
         direction.z = (int)(dir.z);
     }
-    void SetDirection(int x, int z)
-    {
-        direction.x = x;
-        direction.y = 0;
-        direction.z = z;
-    }
-    void ResetDirection()
+
+    public void ResetStatesAndInput()
     {
         direction = Vector3Int.zero;
-        animator.SetBool("Attacking", false);
-        animator.SetBool("Moving", false);
+        SetAttacking(false);
+        SetMoving(false);
     }
 
-    void Update()
+    private void HandleInput()
+    {
+        ResetStatesAndInput();
+        Vector3 dir = NormalisedInputDirection();
+        SetDirection(dir);
+    }
+
+    private Vector3 NormalisedInputDirection()
     {
         Vector3 dir = Vector3.zero;
-        if(Input.GetKey(KeyCode.D)) {
+        if (Input.GetKey(KeyCode.D)) {
             dir += Vector3.right;
         }
         if (Input.GetKey(KeyCode.A)) {
@@ -68,25 +55,40 @@ public class PlayerController : TileController
         if (Input.GetKey(KeyCode.S)) {
             dir += Vector3.back;
         }
-        dir.Normalize();
-        ResetDirection();
-        SetDirection(dir);
-        if (dir.magnitude <= 0.1f) { // Little bit of dead zone; it should be either 1 or 0. Math
-            return; // Nothing happens
-        }
+        return dir.normalized;
+    }
 
-        var target = world.WorldPositionToIndex(transform.position) + new Vector2Int(direction.x, direction.z);
-        if(world.HasEnemy(target)) {
-            animator.SetBool("Attacking", true);
+    private bool NoUserInput()
+    {
+        return Direction == Vector3Int.zero;
+    }
+
+    void ResolveNextPosition(Vector2Int current, Vector2Int dir)
+    {
+        var target = current + dir;
+        if (world.HasEnemy(target)) {
+            SetAttacking(true);
             return;
         }
         else if (world.IsBlocked(target)) {
-            ResetDirection();
+            ResetStatesAndInput();
         }
-        animator.SetBool("Moving", direction.magnitude != 0.0f);
+        else if (world.Get(target).IsReserved) {
+            ResetStatesAndInput();
+        }
+        SetMoving(direction.magnitude != 0.0f);
     }
 
-    public override void Attack(Vector3 position)
+    void Update() // This should be PlayerIdle state, since we only need input handling in this one state
+    {
+        HandleInput();
+        if (NoUserInput()) {
+            return; // Nothing happens
+        }
+        ResolveNextPosition(TileIndex, TileDirection);
+    }
+
+    public override void OnAttack(Vector3 position)
     {
         var index = world.WorldPositionToIndex(position);
         if (world.HasEnemy(index)) {
@@ -97,18 +99,20 @@ public class PlayerController : TileController
 
     public override void OnDamage(int damage)
     {
-        if (health.ReduceAndCheckDeath(damage)) {
+        if (HealthPoints.ReduceAndCheckDeath(damage)) {
+            gameObject.SetActive(false);
             // Death
         }
     }
 
-    public void PlayDust()
-    {
-        dust.Play();
-    }
-
     public override void OnMoveFinish()
     {
-        dust.Play();
+        world.Open(world.WorldPositionToIndex(transform.position));
+        PlayDust();
+    }
+
+    public override void OnAttackFinish()
+    {
+        
     }
 }

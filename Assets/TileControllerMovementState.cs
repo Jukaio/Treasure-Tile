@@ -16,11 +16,12 @@ public class TileControllerMovementState : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         controller = animator.GetComponent<TileController>();
-        offset = controller.Step;
+        offset = controller.Size;
         offset.x = 0.0f;
         offset.z = 0.0f;
         from = controller.transform.position;
         target = from + controller.Steps(controller.Direction);
+        
     }
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

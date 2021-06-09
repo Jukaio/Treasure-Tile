@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Health : ScriptableObject
+public class Health : MonoBehaviour
 {
     [SerializeField] private int initial = 0;
-    [SerializeField] private int maximum = 0;
-    [SerializeField] private int current = 0;
+    private int maximum = 0;
+    private int current = 0;
 
     public int Current { get { return current; } }
+
+    private void Awake()
+    {
+        maximum = initial;
+        current = initial;
+    }
 
     public bool IsDead()
     {
