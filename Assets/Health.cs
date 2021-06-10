@@ -9,6 +9,7 @@ public class Health : MonoBehaviour
     private int current = 0;
 
     public int Current { get { return current; } }
+    public int Maximum { get { return maximum; } }
 
     private void Awake()
     {

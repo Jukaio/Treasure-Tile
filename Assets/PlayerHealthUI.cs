@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class PlayerHealthUI : MonoBehaviour
 {
-    [SerializeField] private PlayerController player = null;
+    [SerializeField] private Health player = null;
     [SerializeField] private Text value = null;
     void Start()
     {
-        value.text = player.HealthPoints.Current.ToString();
+        value.text = player.Current.ToString();
     }
 
     void FixedUpdate()
     {
-        value.text = player.HealthPoints.Current.ToString();
+        value.text = player.Current.ToString();
     }
 }

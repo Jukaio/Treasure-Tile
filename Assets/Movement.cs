@@ -19,5 +19,4 @@ public class Movement : TileControllerMovementState
         base.OnStateEnter(animator, stateInfo, layerIndex);
         controller.RequestMove(target);
     }
-
 }
