@@ -4,21 +4,38 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private GameObject enemy_ui;
-    private List<GameObject> enemy_ui_pool = new List<GameObject>();
-
-    void Start()
+    [SerializeField] private GameObject original;
+    [SerializeField] private int size;
+    private Stack<GameObject> pool = new Stack<GameObject>();
+    //private List<GameObject> used = new List<GameObject>();
+    private Dictionary<EnemyController, GameObject> user = new Dictionary<EnemyController, GameObject>();
+    public GameObject Request(EnemyController that)
     {
-        for(int i = 0; i < 10; i++) {
-            enemy_ui_pool.Add(Instantiate<GameObject>(enemy_ui));
-            enemy_ui_pool[i].GetComponent<EnemyHealthUI>().Register(null);
-            enemy_ui_pool[i].SetActive(false);
+        if(pool.Count > 0) {
+            var to_return = pool.Pop();
+            user.Add(that, to_return);
+            //used.Add(to_return);
+            return to_return;
+        }
+        return null; // Empty
+    }
+    public void Return(EnemyController that)
+    {
+        if(user.TryGetValue(that, out var value)) {
+            pool.Push(value);
+            user.Remove(that);
+            value.SetActive(false);
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        
+        for(int i = 0; i < size; i++) {
+            var that = Instantiate<GameObject>(original);
+            that.GetComponent<EnemyHealthUI>().Register(null);
+            that.SetActive(false);
+            pool.Push(that);
+        }
     }
+
 }

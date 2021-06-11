@@ -30,9 +30,14 @@ public abstract class TileController : MonoBehaviour
 
     // Helpers
     public Vector3 Size { get { return world.TileSize; } }
-    public Vector2Int TileIndex => world.WorldPositionToIndex(transform.position);
+    private Vector2Int current_index = Vector2Int.zero;
+    public Vector2Int TileIndex => current_index;
 
     // "API"
+    public void SetWorld(WorldManager that)
+    {
+        world = that;
+    }
     public Vector3 Steps(Vector3Int velcoity)
     {
         var step = Size;
@@ -44,7 +49,8 @@ public abstract class TileController : MonoBehaviour
     public void RefreshInWorld(Vector3 previous, Vector3 current)
     {
         var prev = world.Get(world.WorldPositionToIndex(previous));
-        var curr = world.Get(world.WorldPositionToIndex(current));
+        current_index = world.WorldPositionToIndex(current);
+        var curr = world.Get(current_index);
         prev.Visitor = null;
         curr.Visitor = gameObject;
     }

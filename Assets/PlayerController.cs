@@ -7,6 +7,7 @@ public class PlayerController : TileController
 {
     private Vector3Int direction = Vector3Int.zero;
     public override Vector3Int Direction { get { return direction; } }
+    
 
     protected override sealed void OnAwake()
     {

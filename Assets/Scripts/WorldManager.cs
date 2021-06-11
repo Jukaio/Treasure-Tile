@@ -9,6 +9,10 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
 
     private Tilemap tilemap;
     private WorldGenerator generator;
+
+    [SerializeField] private UIManager ui = null;
+    [SerializeField] private GameObject enemy = null;
+
     // We could do this smarter - Let's do it like that first
     [SerializeField] private Tile3D ground = null;
     [SerializeField] private Tile3D wall = null;
@@ -57,11 +61,13 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
         return at + offset;
     }
 
-    public void Kill(Vector2Int at) 
+    public void KillEnemy(Vector2Int at) 
     {
         if (IsInBounds(at)) {
             var that = Get(at);
+            ui.Return(that.Visitor.GetComponent<EnemyController>());
             that.Visitor = null;
+            that.Open();
         }
     }
     public void Open(Vector2Int at)
@@ -255,6 +261,18 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
         });
     }
 
+    private void SpawnEnemy(Vector2Int at)
+    {
+        enemy = Instantiate(enemy);
+        var controller = enemy.GetComponent<EnemyController>();
+        controller.SetWorld(this);
+        controller.Spawn(IndexToWorldPosition(at));
+        var element = ui.Request(controller);
+        element.GetComponent<EnemyHealthUI>().Register(controller.HealthPoints);
+        element.SetActive(true);
+        element.GetComponent<EnemyHealthUI>().SetCanvas(ui.gameObject);
+    }
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -263,24 +281,14 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
         generator = GetComponent<WorldGenerator>();
 
         LoadGeneratedLevel();
-        //CreateBordersAroundLevel();
-        //Set(new Vector2Int(0, 0), ground);
-        //Set(new Vector2Int(0, 1), wall);
-        //Set(new Vector2Int(0, 2), north_east_corner_wall);
-        //Set(new Vector2Int(0, 3), north_west_corner_wall);
-        //Set(new Vector2Int(0, 4), south_east_corner_wall);
-        //Set(new Vector2Int(0, 5), south_west_corner_wall);
-        //Set(new Vector2Int(0, 6), north_half_wall);
-        //Set(new Vector2Int(0, 7), south_half_wall);
-        //Set(new Vector2Int(0, 8), east_half_wall);
-        //Set(new Vector2Int(0, 9), west_half_wall);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        SpawnEnemy(new Vector2Int(5, 0));
+ 
     }
+
 
     [SerializeField] private bool debug_generator = false;
     private void OnDrawGizmosSelected()

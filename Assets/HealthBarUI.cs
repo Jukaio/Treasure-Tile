@@ -8,6 +8,10 @@ public class HealthBarUI : MonoBehaviour
     [SerializeField] private Health health;
     private Slider slider;
 
+    public void SetContext(Health that)
+    {
+        health = that;
+    }
     void Awake()
     {
         slider = GetComponent<Slider>();

@@ -43,10 +43,11 @@ public class EnemyController : TileController
         SetAttacking(false);
     }
 
-    void Start()
+    public void Spawn(Vector3 world_position)
     {
-        transform.position = world.IndexToWorldPosition(new Vector2Int(5, 0)); // TODO: Replace Vector3.zero with spawn position
-        RefreshInWorld(transform.position, transform.position);
+        transform.position = world_position; // TODO: Replace Vector3.zero with spawn position
+        RefreshInWorld(world_position, world_position);
+        
     }
 
     public override void OnAttack(Vector3 position)
@@ -60,7 +61,7 @@ public class EnemyController : TileController
     public override void OnDamage(int damage)
     {
         if(HealthPoints.ReduceAndCheckDeath(damage)) {
-            world.Kill(world.WorldPositionToIndex(transform.position));
+            world.KillEnemy(TileIndex);
             gameObject.SetActive(false);
         }
     }
