@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Attacking : TileControllerMovementState
+public class RangeAttacking : TileControllerMovementState
 {
-    bool IsForward = true;
+    // TODO: replace the behaviour of this class with some sort of projectile behaviour
+    // It is range though, but instead of "shooting itself" it should shoot a projectile
+
+    private bool IsForward = true;
+    private RangeEnemyController range_controller = null;
+
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
+        range_controller = animator.GetComponent<RangeEnemyController>();
+        target = range_controller.Target;
         IsForward = true;
     }
 

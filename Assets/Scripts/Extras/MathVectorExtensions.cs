@@ -5,6 +5,11 @@ using UnityEngine;
 
 public static class MathVectorExtensions
 {
+    public static float Manhattan(this Vector2Int a, Vector2Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+
     public static Vector2Int XZ(this Vector3Int that)
     {
         return new Vector2Int(that.x, that.z);

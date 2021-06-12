@@ -15,6 +15,8 @@ public class TileControllerMovementState : StateMachineBehaviour
        "OnStateMachineEnter is called when entering a statemachine via its Entry Node" */
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // TODO: Change the way this is coupled - It's awkward; Break down components into smaller components
+        // Idea: Target component -> any kind of target, etc.
         controller = animator.GetComponent<TileController>();
         offset = controller.Size;
         offset.x = 0.0f;

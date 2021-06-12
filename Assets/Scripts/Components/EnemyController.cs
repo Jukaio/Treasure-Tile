@@ -9,7 +9,7 @@ public class EnemyController : TileController
     public override Vector3Int Direction => direction;
     private List<Vector2Int> path = null;
 
-    public void SetPath(List<Vector2Int> that) {
+    public virtual void SetPath(List<Vector2Int> that) {
         path = that;
         if(path?.Count <= 0) {
             direction = Vector3Int.zero;
@@ -74,7 +74,7 @@ public class EnemyController : TileController
 
         float heuristic(Vector2Int a, Vector2Int b)
         {
-            return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+            return a.Manhattan(b);
         };
 
         float[,] f = new float[size.x, size.y];
