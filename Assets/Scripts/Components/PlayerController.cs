@@ -7,7 +7,8 @@ public class PlayerController : TileController
 {
     private Vector3Int direction = Vector3Int.zero;
     public override Vector3Int Direction { get { return direction; } }
-    
+    [SerializeField] int damage = 10;
+
 
     protected override sealed void OnAwake()
     {
@@ -94,7 +95,7 @@ public class PlayerController : TileController
         var index = world.WorldPositionToIndex(position);
         if (world.HasEnemy(index)) {
             var enemy = world.Get(index).Visitor.GetComponent<TileController>();
-            enemy.OnDamage(10);
+            enemy.OnDamage(damage);
         }
     }
 

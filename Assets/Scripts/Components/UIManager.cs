@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIManager : MonoBehaviour
+public class UIManager : MonoBehaviour // all it manages right now is enemy health bars
 {
     [SerializeField] private GameObject original;
     [SerializeField] private int size;

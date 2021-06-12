@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// It is unpolished, but I like it - It provides convenient utility 
+// like accessing the neighbours of a generic tile in a generic grid
 public abstract class UtilityGrid<Resource> : MonoBehaviour
 {
     public delegate Resource Assigner(Vector2Int index);

@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class RangeEnemyController : EnemyController // This kind of inheritance hierarchy is certainly... not too good
+public class RangeEnemyController : EnemyController // This kind of inheritance hierarchy is certainly... not good
 {                                                   // But in the scope of this little project it is efficient :) 
-    private Vector3Int direction = Vector3Int.zero;
-    public override Vector3Int Direction => direction;
-    private List<Vector2Int> path = null;
     [SerializeField] int range = 3;
 
     public Vector3 Target { get; private set; }

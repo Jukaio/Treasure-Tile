@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dust : MonoBehaviour
-{
+public class Dust : MonoBehaviour // TODO: encapsulate more than just paricles
+{                                 // Sound, and other stuff; Should get renamed then
     private ParticleSystem dust = null;
 
     void Start()

@@ -2,16 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public sealed class WorldManager : UtilityGrid<Tile3D>
 {
+    // I have to admit that my naming seems a little all over the place,
+    // mostly since I worked in C++ a lot and follow the C++ standard naming convention (snake_case)
+    // In this case, public properties were supposed to follow CamelCase, while private data
+    // was supposed to use snake_case, though, [SerializeField] private data is a little bit of an edge case,
+    // but I can easily adapt to any code standard
+    // TODO: Make every CamelCase, no snake_case for private stuff
     private Grid grid;
 
     private Tilemap tilemap;
     private WorldGenerator generator;
 
     [SerializeField] private UIManager ui = null;
-    [SerializeField] private GameObject enemy = null;
+    [SerializeField] private GameObject[] enemies = null;
 
     // We could do this smarter - Let's do it like that first
     [SerializeField] private Tile3D ground = null;
@@ -29,6 +36,11 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
     [SerializeField] private Tile3D east_half_wall = null;
     [SerializeField] private Tile3D west_half_wall = null;
     [SerializeField] private Tile3D stone = null;
+
+    [SerializeField] private int random_spawn_enemy_amount = 5;
+    [SerializeField] private int active_enemies = 0;
+    private int kill_count = 0;
+    [SerializeField] private Text kill_count_ui;
 
     public PlayerController Player { get; private set; }
     // To make it VERY explicit - SetPlayer
@@ -68,6 +80,12 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
             ui.Return(that.Visitor.GetComponent<EnemyController>());
             that.Visitor = null;
             that.Open();
+            kill_count++;
+            active_enemies--;
+            if(active_enemies <= 0) {
+                SpawnRandomEnemies(random_spawn_enemy_amount);
+            }
+            kill_count_ui.text = kill_count.ToString();
         }
     }
     public void Open(Vector2Int at)
@@ -244,14 +262,6 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
         return BoolLayoutToTile(layout);
     }
 
-    void CreateBordersAroundLevel()
-    {
-        ForEachOnEdge((Vector2Int index) => 
-        {
-            return wall; //EvaluateTileConsideringNeighbours(index, generator.Get(index));
-        });
-
-    }
 
     void LoadGeneratedLevel()
     {
@@ -263,8 +273,9 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
 
     private void SpawnEnemy(Vector2Int at)
     {
-        enemy = Instantiate(enemy);
-        var controller = enemy.GetComponent<EnemyController>();
+        var use = enemies[Random.Range(0, enemies.Length)];
+        var spawn = Instantiate<GameObject>(use); // TODO: Pool instead of Instantiate!
+        var controller = spawn.GetComponent<EnemyController>();
         controller.SetWorld(this);
         controller.Spawn(IndexToWorldPosition(at));
         var element = ui.Request(controller);
@@ -283,10 +294,27 @@ public sealed class WorldManager : UtilityGrid<Tile3D>
         LoadGeneratedLevel();
     }
 
+    private void SpawnRandomEnemies(int count) 
+    {
+        for (int i = 0; i < count; i++) {
+            int x = Random.Range(Origin().x, Size().x);
+            int y = Random.Range(Origin().x, Size().x);
+            Tile3D tile = Get(new Vector2Int(x, y));
+            while (tile.HasEnemy || tile.IsBlocked) {
+                x = Random.Range(Origin().x, Size().x);
+                y = Random.Range(Origin().x, Size().x);
+                tile = Get(new Vector2Int(x, y));
+            }
+            SpawnEnemy(new Vector2Int(x, y));
+        }
+        active_enemies += count;
+    }
+
     private void Start()
     {
-        SpawnEnemy(new Vector2Int(5, 0));
- 
+        // Bruteforce some spawning
+        SpawnRandomEnemies(random_spawn_enemy_amount);
+        kill_count_ui.text = kill_count.ToString();
     }
 
 

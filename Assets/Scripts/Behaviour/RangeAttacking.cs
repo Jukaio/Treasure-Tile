@@ -14,6 +14,7 @@ public class RangeAttacking : TileControllerMovementState
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         range_controller = animator.GetComponent<RangeEnemyController>();
+
         target = range_controller.Target;
         IsForward = true;
     }

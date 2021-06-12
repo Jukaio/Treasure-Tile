@@ -38,9 +38,9 @@ public class WorldGenerator : UtilityGrid<WorldGenerator.State>
     }
     /* Source: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm */
     private void CarvePath(Vector2Int from, Vector2Int to, int width) /* TODO: explain width - 
-                                                                           * width indicates the "circles" around the origin
-                                                                           * width of 1 = line thickness of 3
-                                                                           * width of 2 = line thickness of 5 */
+                                                                       * width indicates the "circles" around the origin
+                                                                       * width of 1 = line thickness of 3
+                                                                       * width of 2 = line thickness of 5 */
     {
         from = Clamp(from);
         to = Clamp(to);

@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// Base interface of an enemy
+// TODO: Extract the "melee" behaviour let this class be a sole interface
 public class EnemyController : TileController
 {
-    private Vector3Int direction = Vector3Int.zero;
+    [SerializeField] int damage = 10;
+    // The protected members scream for an interface in a new component
+    // It is not the cleanest way, but it is a way :) 
+    protected Vector3Int direction = Vector3Int.zero; // To enable inheritance
     public override Vector3Int Direction => direction;
-    private List<Vector2Int> path = null;
-
+    protected List<Vector2Int> path = null;
+    
     public virtual void SetPath(List<Vector2Int> that) {
         path = that;
         if(path?.Count <= 0) {
@@ -55,7 +60,7 @@ public class EnemyController : TileController
         var index = world.WorldPositionToIndex(position);
         if (world.HasPlayer(index)) {
             var enemy = world.Get(index).Visitor.GetComponent<TileController>();
-            enemy.OnDamage(10);
+            enemy.OnDamage(damage);
         }
     }
     public override void OnDamage(int damage)
