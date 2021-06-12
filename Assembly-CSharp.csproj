@@ -64,13 +64,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Idle.cs" />
-    <Compile Include="Assets\Movement.cs" />
-    <Compile Include="Assets\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\Tile3D.cs" />
-    <Compile Include="Assets\Scripts\UtilityGrid.cs" />
-    <Compile Include="Assets\Scripts\WorldGenerator.cs" />
-    <Compile Include="Assets\Scripts\WorldManager.cs" />
+    <Compile Include="Assets\Scripts\Behaviour\EnemyIdle.cs" />
+    <Compile Include="Assets\Scripts\Behaviour\MeleeAttacking.cs" />
+    <Compile Include="Assets\Scripts\Behaviour\Movement.cs" />
+    <Compile Include="Assets\Scripts\Behaviour\RangeAttacking.cs" />
+    <Compile Include="Assets\Scripts\Behaviour\TileControllerMovementState.cs" />
+    <Compile Include="Assets\Scripts\Components\Dust.cs" />
+    <Compile Include="Assets\Scripts\Components\EnemyController.cs" />
+    <Compile Include="Assets\Scripts\Components\EnemyHealthUI.cs" />
+    <Compile Include="Assets\Scripts\Components\Health.cs" />
+    <Compile Include="Assets\Scripts\Components\HealthBarUI.cs" />
+    <Compile Include="Assets\Scripts\Components\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Components\PlayerHealthUI.cs" />
+    <Compile Include="Assets\Scripts\Components\RangeEnemyController.cs" />
+    <Compile Include="Assets\Scripts\Components\TileController.cs" />
+    <Compile Include="Assets\Scripts\Components\UIManager.cs" />
+    <Compile Include="Assets\Scripts\Components\UtilityGrid.cs" />
+    <Compile Include="Assets\Scripts\Components\WorldGenerator.cs" />
+    <Compile Include="Assets\Scripts\Components\WorldManager.cs" />
+    <Compile Include="Assets\Scripts\Extras\MathVectorExtensions.cs" />
+    <Compile Include="Assets\Scripts\Objects\Tile3D.cs" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.8f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
